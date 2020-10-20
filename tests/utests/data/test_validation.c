@@ -419,12 +419,12 @@ const char *schema_j =
                 ly_set_log_clb(logger, 1)
 
 
-#define MODEL_CREATE(INPUT, MODEL) \
-                MODEL_CREATE_PARAM(INPUT, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_SUCCESS, "", MODEL)
+#define LYD_NODE_CREATE(INPUT, MODEL) \
+                LYD_NODE_CREATE_PARAM(INPUT, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_SUCCESS, "", MODEL)
 
 
-#define MODEL_CHECK_CHAR(IN_MODEL, TEXT) \
-                MODEL_CHECK_CHAR_PARAM(IN_MODEL, TEXT, LYD_XML, LYD_PRINT_SHRINK | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK)
+#define LYD_NODE_CHECK_CHAR(IN_MODEL, TEXT) \
+                LYD_NODE_CHECK_CHAR_PARAM(IN_MODEL, TEXT, LYD_XML, LYD_PRINT_SHRINK | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK)
 
 
 
@@ -452,23 +452,23 @@ test_when(void **state)
 
     data    = "<c xmlns=\"urn:tests:a\">hey</c>";
     err_msg = "When condition \"/cont/b = 'val_b'\" not satisfied. /a:c";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
 
     data = "<cont xmlns=\"urn:tests:a\"><b>val_b</b></cont><c xmlns=\"urn:tests:a\">hey</c>";
-    MODEL_CREATE(data, tree);
+    LYD_NODE_CREATE(data, tree);
     LYSC_NODE_CHECK(tree->next->schema, LYS_LEAF, "c");
     assert_int_equal(LYD_WHEN_TRUE, tree->next->flags);
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
 
     data = "<cont xmlns=\"urn:tests:a\"><a>val</a><b>val_b</b></cont><c xmlns=\"urn:tests:a\">val_c</c>";
 
-    MODEL_CREATE(data, tree);
+    LYD_NODE_CREATE(data, tree);
     LYSC_NODE_CHECK(lyd_child(tree)->schema, LYS_LEAF, "a");
     assert_int_equal(LYD_WHEN_TRUE, lyd_child(tree)->flags);
     LYSC_NODE_CHECK(tree->next->schema, LYS_LEAF, "c");
     assert_int_equal(LYD_WHEN_TRUE, tree->next->flags);
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
 
     CONTEXT_DESTROY;
 }
@@ -485,18 +485,18 @@ test_mandatory(void **state)
 
     data    = "<d xmlns=\"urn:tests:b\"/>";
     err_msg = "Mandatory node \"choic\" instance does not exist. /b:choic";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data    = "<l xmlns=\"urn:tests:b\">string</l><d xmlns=\"urn:tests:b\"/>";
     err_msg = "Mandatory node \"c\" instance does not exist. /b:c";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data    = "<a xmlns=\"urn:tests:b\">string</a>";
     err_msg = "Mandatory node \"c\" instance does not exist. /b:c";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data    = "<a xmlns=\"urn:tests:b\">string</a><c xmlns=\"urn:tests:b\">string2</c>";
-    MODEL_CREATE(data, tree);
+    LYD_NODE_CREATE(data, tree);
     lyd_free_siblings(tree);
 
     CONTEXT_DESTROY; 
@@ -514,21 +514,21 @@ test_minmax(void **state)
 
     data = "<d xmlns=\"urn:tests:c\"/>";
     err_msg = "Too few \"l\" instances. /c:choic/b/l";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data =
     "<l xmlns=\"urn:tests:c\">val1</l>"
     "<l xmlns=\"urn:tests:c\">val2</l>";
     err_msg = "Too few \"l\" instances. /c:choic/b/l";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
 
     data =
     "<l xmlns=\"urn:tests:c\">val1</l>"
     "<l xmlns=\"urn:tests:c\">val2</l>"
     "<l xmlns=\"urn:tests:c\">val3</l>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<l xmlns=\"urn:tests:c\">val1</l>"
@@ -540,7 +540,7 @@ test_minmax(void **state)
     "<lt xmlns=\"urn:tests:c\"><k>val4</k></lt>"
     "<lt xmlns=\"urn:tests:c\"><k>val5</k></lt>";
     err_msg = "Too many \"lt\" instances. /c:lt";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     CONTEXT_DESTROY;
 }
@@ -563,8 +563,8 @@ test_unique(void **state)
     "<lt xmlns=\"urn:tests:d\">"
         "<k>val2</k>"
     "</lt>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<lt xmlns=\"urn:tests:d\">"
@@ -575,8 +575,8 @@ test_unique(void **state)
         "<k>val2</k>"
         "<l1>not-same</l1>"
     "</lt>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<lt xmlns=\"urn:tests:d\">"
@@ -588,7 +588,7 @@ test_unique(void **state)
         "<l1>same</l1>"
     "</lt>";
     err_msg = "Unique data leaf(s) \"l1\" not satisfied in \"/d:lt[k='val1']\" and \"/d:lt[k='val2']\". /d:lt[k='val2']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* now try with more instances */
     data =
@@ -624,8 +624,8 @@ test_unique(void **state)
         "<k>val8</k>"
         "<l1>8</l1>"
     "</lt>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<lt xmlns=\"urn:tests:d\">"
@@ -657,8 +657,8 @@ test_unique(void **state)
     "<lt xmlns=\"urn:tests:d\">"
         "<k>val8</k>"
     "</lt>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<lt xmlns=\"urn:tests:d\">"
@@ -691,7 +691,7 @@ test_unique(void **state)
         "<l1>8</l1>"
     "</lt>";
     err_msg = "Unique data leaf(s) \"l1\" not satisfied in \"/d:lt[k='val7']\" and \"/d:lt[k='val2']\". /d:lt[k='val2']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     CONTEXT_DESTROY;
 }
@@ -763,8 +763,8 @@ test_unique_nested(void **state)
             "<l3>3</l3>"
         "</lt3>"
     "</lt2>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     data =
     "<lt2 xmlns=\"urn:tests:d\">"
@@ -825,7 +825,7 @@ test_unique_nested(void **state)
     "</lt2>";
     err_msg = "Unique data leaf(s) \"l3\" not satisfied in \"/d:lt2[k='val2']/lt3[kk='val3']\" and"
                   " \"/d:lt2[k='val2']/lt3[kk='val1']\". /d:lt2[k='val2']/lt3[kk='val1']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
 
     data =
@@ -865,7 +865,7 @@ test_unique_nested(void **state)
         "<l4>5</l4>"
     "</lt2>";
     err_msg = "Unique data leaf(s) \"cont/l2 l4\" not satisfied in \"/d:lt2[k='val4']\" and \"/d:lt2[k='val2']\". /d:lt2[k='val2']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data =
     "<lt2 xmlns=\"urn:tests:d\">"
@@ -913,7 +913,7 @@ test_unique_nested(void **state)
     "</lt2>";
 
     err_msg = "Unique data leaf(s) \"l5 l6\" not satisfied in \"/d:lt2[k='val5']\" and \"/d:lt2[k='val3']\". /d:lt2[k='val3']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     CONTEXT_DESTROY;
 }
@@ -930,43 +930,43 @@ test_dup(void **state)
 
     data = "<d xmlns=\"urn:tests:e\">25</d><d xmlns=\"urn:tests:e\">50</d>";
     err_msg = "Duplicate instance of \"d\". /e:d";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<lt xmlns=\"urn:tests:e\"><k>A</k></lt><lt xmlns=\"urn:tests:e\"><k>B</k></lt><lt xmlns=\"urn:tests:e\"><k>A</k></lt>";
     err_msg = "Duplicate instance of \"lt\". /e:lt[k='A']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<ll xmlns=\"urn:tests:e\">A</ll><ll xmlns=\"urn:tests:e\">B</ll><ll xmlns=\"urn:tests:e\">B</ll>";
     err_msg = "Duplicate instance of \"ll\". /e:ll[.='B']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<cont xmlns=\"urn:tests:e\"></cont><cont xmlns=\"urn:tests:e\"/>";
     err_msg = "Duplicate instance of \"cont\". /e:cont";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* same tests again but using hashes */
     data = "<cont xmlns=\"urn:tests:e\"><d>25</d><d>50</d><ll>1</ll><ll>2</ll><ll>3</ll><ll>4</ll></cont>";
     err_msg = "Duplicate instance of \"d\". /e:cont/d";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<cont xmlns=\"urn:tests:e\"><ll>1</ll><ll>2</ll><ll>3</ll><ll>4</ll>"
         "<lt><k>a</k></lt><lt><k>b</k></lt><lt><k>c</k></lt><lt><k>d</k></lt><lt><k>c</k></lt></cont>";
     err_msg = "Duplicate instance of \"lt\". /e:cont/lt[k='c']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<cont xmlns=\"urn:tests:e\"><ll>1</ll><ll>2</ll><ll>3</ll><ll>4</ll>"
         "<ll>a</ll><ll>b</ll><ll>c</ll><ll>d</ll><ll>d</ll></cont>";
     err_msg = "Duplicate instance of \"ll\". /e:cont/ll[.='d']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* cases */
     data = "<l xmlns=\"urn:tests:e\">a</l><l xmlns=\"urn:tests:e\">b</l><l xmlns=\"urn:tests:e\">c</l><l xmlns=\"urn:tests:e\">b</l>";
     err_msg = "Duplicate instance of \"l\". /e:l[.='b']";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data = "<l xmlns=\"urn:tests:e\">a</l><l xmlns=\"urn:tests:e\">b</l><l xmlns=\"urn:tests:e\">c</l><a xmlns=\"urn:tests:e\">aa</a>";
     err_msg = "Data for both cases \"a\" and \"b\" exist. /e:choic";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     CONTEXT_DESTROY;
 }
@@ -1005,9 +1005,9 @@ test_defaults(void **state)
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt1</ll2>"
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
     //sigsegv
-    //MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_SHRINK | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK)
+    //LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_SHRINK | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK)
 
     /* check diff */
     str = "<ll1 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"create\">def1</ll1>"
@@ -1025,8 +1025,8 @@ test_defaults(void **state)
             "<ll2 yang:operation=\"create\">dflt2</ll2>"
         "</cont>";
 
-    MODEL_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
-    MODEL_DESTROY(diff);
+    LYD_NODE_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_DESTROY(diff);
 
     /* create another explicit case and validate */
     assert_int_equal(lyd_new_term(NULL, mod, "l", "value", &node), LY_SUCCESS);
@@ -1046,15 +1046,15 @@ test_defaults(void **state)
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt1</ll2>"
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
 
 
     /* check diff */
     str = "<ll1 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">def1</ll1>"
         "<ll1 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">def2</ll1>"
         "<ll1 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">def3</ll1>";
-    MODEL_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
-    MODEL_DESTROY(diff);
+    LYD_NODE_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_DESTROY(diff);
 
     /* create explicit leaf-list and leaf and validate */
     assert_int_equal(lyd_new_term(NULL, mod, "d", "15", &node), LY_SUCCESS);
@@ -1075,14 +1075,14 @@ test_defaults(void **state)
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt1</ll2>"
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
 
     /* check diff */
     str = "<d xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">15</d>"
         "<ll2 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">dflt1</ll2>"
         "<ll2 xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"delete\">dflt2</ll2>";
-    MODEL_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
-    MODEL_DESTROY(diff);
+    LYD_NODE_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_DESTROY(diff);
 
     /* create first explicit container, which should become implicit */
     assert_int_equal(lyd_new_inner(NULL, mod, "cont", &node), LY_SUCCESS);
@@ -1101,7 +1101,7 @@ test_defaults(void **state)
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt1</ll2>"
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
     /* check diff */
     assert_null(diff);
 
@@ -1122,7 +1122,7 @@ test_defaults(void **state)
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt1</ll2>"
             "<ll2 xmlns:ncwd=\"urn:ietf:params:xml:ns:yang:ietf-netconf-with-defaults\" ncwd:default=\"true\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_CHECK_CHAR_PARAM(tree, str, LYD_XML, LYD_PRINT_WD_IMPL_TAG | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
     /* check diff */
     assert_null(diff);
 
@@ -1141,7 +1141,7 @@ test_defaults(void **state)
             "<d>5</d>"
             "<ll2>non-dflt</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR(tree, str);
+    LYD_NODE_CHECK_CHAR(tree, str);
 
     /* check diff */
     str = "<cont xmlns=\"urn:tests:f\" xmlns:yang=\"urn:ietf:params:xml:ns:yang:1\" yang:operation=\"none\">"
@@ -1152,9 +1152,9 @@ test_defaults(void **state)
             "<ll2 yang:operation=\"delete\">dflt1</ll2>"
             "<ll2 yang:operation=\"delete\">dflt2</ll2>"
         "</cont>";
-    MODEL_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
-    MODEL_DESTROY(diff);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CHECK_CHAR_PARAM(diff, str, LYD_XML, LYD_PRINT_WD_ALL | LYD_PRINT_WITHSIBLINGS | LYD_PRINT_SHRINK);
+    LYD_NODE_DESTROY(diff);
+    LYD_NODE_DESTROY(tree);
 
     CONTEXT_DESTROY;
 }
@@ -1183,7 +1183,7 @@ test_iffeature(void **state)
         "<d>51</d>"
     "</cont>";
     err_msg = "Data are disabled by \"cont\" schema node if-feature. /g:cont";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* enable f1 */
     assert_int_equal(lys_feature_enable(mod, "f1"), LY_SUCCESS);
@@ -1201,19 +1201,19 @@ test_iffeature(void **state)
         "</cont2>"
     "</cont>";
     err_msg = "Data are disabled by \"cont2\" schema node if-feature. /g:cont/cont2";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data =
     "<cont xmlns=\"urn:tests:g\">"
         "<a>val</a>"
     "</cont>";
     err_msg = "Data are disabled by \"choic\" schema node if-feature. /g:cont/a";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* enable f3 */
     assert_int_equal(lys_feature_enable(mod, "f3"), LY_SUCCESS);
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     /* disabled by f2 */
     data =
@@ -1221,12 +1221,12 @@ test_iffeature(void **state)
         "<l>val</l>"
     "</cont>";
     err_msg = "Data are disabled by \"b\" schema node if-feature. /g:cont/l";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     /* enable f2 */
     assert_int_equal(lys_feature_enable(mod, "f2"), LY_SUCCESS);
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
 
     /* try separate validation */
     assert_int_equal(lys_feature_disable(mod, "f1"), LY_SUCCESS);
@@ -1241,7 +1241,7 @@ test_iffeature(void **state)
             "<e>val</e>"
         "</cont2>"
     "</cont>";
-    MODEL_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY, 0, LY_SUCCESS, "", tree)
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY, 0, LY_SUCCESS, "", tree)
 
     assert_int_equal(LY_EVALID, lyd_validate_all(&tree, NULL, LYD_VALIDATE_PRESENT, NULL));
     logbuf_assert("Data are disabled by \"cont\" schema node if-feature. /g:cont");
@@ -1255,7 +1255,7 @@ test_iffeature(void **state)
 
     assert_int_equal(LY_SUCCESS, lyd_validate_all(&tree, NULL, LYD_VALIDATE_PRESENT, NULL));
 
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
 
     CONTEXT_DESTROY;
 }
@@ -1277,13 +1277,13 @@ test_state(void **state)
         "</cont2>"
     "</cont>";
     err_msg = "Invalid state data node \"cont2\" found. /h:cont/cont2";
-    MODEL_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY | LYD_PARSE_NO_STATE, 0, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY | LYD_PARSE_NO_STATE, 0, LY_EVALID, err_msg, tree);
 
-    MODEL_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY, 0, LY_SUCCESS, "", tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY, 0, LY_SUCCESS, "", tree);
     assert_int_equal(LY_EVALID, lyd_validate_all(&tree, NULL, LYD_VALIDATE_PRESENT | LYD_VALIDATE_NO_STATE, NULL));
     logbuf_assert("Invalid state data node \"cont2\" found. /h:cont/cont2");
 
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
 
     CONTEXT_DESTROY;
 }
@@ -1303,15 +1303,15 @@ test_must(void **state)
         "<l2>val</l2>"
     "</cont>";
     err_msg = "Must condition \"../l = 'right'\" not satisfied. /i:cont/l2";
-    MODEL_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, 0, LYD_VALIDATE_PRESENT, LY_EVALID, err_msg, tree);
 
     data =
     "<cont xmlns=\"urn:tests:i\">"
         "<l>right</l>"
         "<l2>val</l2>"
     "</cont>";
-    MODEL_CREATE(data, tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_CREATE(data, tree);
+    LYD_NODE_DESTROY(tree);
     
     CONTEXT_DESTROY;
 }
@@ -1352,7 +1352,7 @@ test_action(void **state)
         "<lf1>not true</lf1>"
     "</cont>"
     "<lf3 xmlns=\"urn:tests:j\">target</lf3>";
-    MODEL_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML, LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
 
     /* disabled if-feature */
     assert_int_equal(LY_EVALID, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_RPC, NULL));
@@ -1366,13 +1366,13 @@ test_action(void **state)
     assert_int_equal(LY_EVALID, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_RPC, NULL));
     logbuf_assert("Must condition \"../../lf1 = 'true'\" not satisfied. /j:cont/l1[k='val1']/act");
 
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
     data =
     "<cont xmlns=\"urn:tests:j\">"
         "<lf1>true</lf1>"
     "</cont>"
     "<lf3 xmlns=\"urn:tests:j\">target</lf3>";
-    MODEL_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
 
     /* success */
     assert_int_equal(LY_SUCCESS, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_RPC, NULL));
@@ -1426,7 +1426,7 @@ test_reply(void **state)
         "<lf1>not true</lf1>"
     "</cont>"
     "<lf4 xmlns=\"urn:tests:j\">target</lf4>";
-    MODEL_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
 
     /* disabled if-feature */
     assert_int_equal(LY_EVALID, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_REPLY, NULL));
@@ -1440,20 +1440,20 @@ test_reply(void **state)
     assert_int_equal(LY_EVALID, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_REPLY, NULL));
     logbuf_assert("Must condition \"../../lf1 = 'true2'\" not satisfied. /j:cont/l1[k='val1']/act");
 
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
     data =
     "<cont xmlns=\"urn:tests:j\">"
         "<lf1>true2</lf1>"
     "</cont>"
     "<lf4 xmlns=\"urn:tests:j\">target</lf4>";
-    MODEL_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
+    LYD_NODE_CREATE_PARAM(data, LYD_XML,LYD_PARSE_ONLY | LYD_PARSE_TRUSTED, 0, LY_SUCCESS, "", tree);
 
     /* success */
     assert_int_equal(LY_SUCCESS, lyd_validate_op(op_tree, tree, LYD_VALIDATE_OP_REPLY, NULL));
 
     lys_feature_disable(mod, "feat1");
     lyd_free_tree(op_tree);
-    MODEL_DESTROY(tree);
+    LYD_NODE_DESTROY(tree);
 
     CONTEXT_DESTROY;
 }
