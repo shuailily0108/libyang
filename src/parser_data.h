@@ -157,6 +157,11 @@ struct ly_in;
 /** @} dataparseroptions */
 
 /**
+ * @brief Mask for checking LYD_PARSE_ options (@ref dataparseroptions)
+ */
+#define LYD_PARSE_OPTS_MASK    0xFFFF0000
+
+/**
  * @ingroup datatree
  * @defgroup datavalidationoptions Data validation options
  *
@@ -183,6 +188,11 @@ struct ly_in;
 #define LYD_VALIDATE_PRESENT      0x0002    /**< Validate only modules whose data actually exist. */
 
 /** @} datavalidationoptions */
+
+/**
+ * @brief Mask for checking LYD_VALIDATE_ options (@ref datavalidationoptions)
+ */
+#define LYD_VALIDATE_OPTS_MASK 0x0000FFFF
 
 /**
  * @ingroup datatree
@@ -275,7 +285,7 @@ LY_ERR lyd_parse_data_path(const struct ly_ctx *ctx, const char *path, LYD_FORMA
  * @brief Parse (and validate) data from the input handler as a YANG RPC/action invocation.
  *
  * In case o LYD_XML @p format, the \<rpc\> envelope element is accepted if present. It is [checked](https://tools.ietf.org/html/rfc6241#section-4.1), an opaq
- * data node (lyd_node_opaq) is created and all its XML attributes are parsed and inserted into the node. As a content of the enveloper, an RPC data or
+ * data node (lyd_node_opaq) is created and all its XML attributes are parsed and inserted into the node. As a content of the envelope, an RPC data or
  * \<action\> envelope element is expected. The \<action\> envelope element is also [checked](https://tools.ietf.org/html/rfc7950#section-7.15.2) and parsed as
  * the \<rpc\> envelope. Inside the \<action\> envelope, only an action data are expected.
  *
